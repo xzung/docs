@@ -381,19 +381,28 @@ This `/oauth/token` route will return a JSON response containing `access_token`,
 
 The OAuth2 password grant allows your other first-party clients, such as a mobile application, to obtain an access token using an e-mail address / username and password. This allows you to issue access tokens securely to your first-party clients without requiring your users to go through the entire OAuth2 authorization code redirect flow.
 
+OAuth2.0 密码授权允许你的其他的第一方客户端，如一个移动应用程序，使用一个email或用户以及密码来获取一个access token.这将允许你安全的颁发access token 给你的第一方客户端，而不必要求你的用户名去走完整的oauth 认证码重定向流程。
+
+ps: first-party 可以理解为自家的，第一方的，就是说我有了OAuth2.0服务的api 项目，我还有了使用它的客户端程序
+
 <a name="creating-a-password-grant-client"></a>
 ### Creating A Password Grant Client
 
 Before your application can issue tokens via the password grant, you will need to create a password grant client. You may do this using the `passport:client` command with the `--password` option. If you have already run the `passport:install` command, you do not need to run this command:
 
-    php artisan passport:client --password
+在你的 application 能够通过密码模式发布token 之前，你需要先去创建一个密码模式client。你可以在oauth 服务端使用  `passport:client --password` 令来创建密码模式的客户端。 如果你已经运行过了  `passport:install`  令，你将不需要运行这个命令。
+
+
+    php artisan passport:client --password
 
 <a name="requesting-password-grant-tokens"></a>
 ### Requesting Tokens
 
 Once you have created a password grant client, you may request an access token by issuing a `POST` request to the `/oauth/token` route with the user's email address and password. Remember, this route is already registered by the `Passport::routes` method so there is no need to define it manually. If the request is successful, you will receive an `access_token` and `refresh_token` in the JSON response from the server:
 
-    $http = new GuzzleHttp\Client;
+一旦你创建一个密码模式客户端，你可以使用一个post请求发送用户名以及密码到路由 /oauth/token 来获取一个access token .记住，这个路由已经被Passport:routes 方法注册，因此，不需要手动定义它。如果请求成功，你将接收到一个access_token 和 refresh_token .
+
+    $http = new GuzzleHttp\Client;
 
     $response = $http->post('http://your-app.com/oauth/token', [
         'form_params' => [
@@ -409,13 +418,19 @@ Once you have created a password grant client, you may request an access token b
     return json_decode((string) $response->getBody(), true);
 
 > {tip} Remember, access tokens are long-lived by default. However, you are free to [configure your maximum access token lifetime](#configuration) if needed.
+注意： access token 默认是长期有效的。你也可以去access token 的默认有效期。
 
 <a name="requesting-all-scopes"></a>
 ### Requesting All Scopes
 
 When using the password grant, you may wish to authorize the token for all of the scopes supported by your application. You can do this by requesting the `*` scope. If you request the `*` scope, the `can` method on the token instance will always return `true`. This scope may only be assigned to a token that is issued using the `password` grant:
 
-    $response = $http->post('http://your-app.com/oauth/token', [
+当使用密码模式的时候，你可能希望在你的app支持的所有范围领域中去验证这个token； 你能够使用`*` 范围值。 如果你请求 范围值，在token 实例中的can方法将返回 true .这个scope值仅仅在使用密码模式发布的token 上才设置。
+
+ps:your application 是指的提供资源的后台app吗？应该是的
+
+
+    $response = $http->post('http://your-app.com/oauth/token', [
         'form_params' => [
             'grant_type' => 'password',
             'client_id' => 'client-id',
